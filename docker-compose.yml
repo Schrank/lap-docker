@@ -34,6 +34,7 @@ services:
       - 9000
     volumes:
       - magento-source:/var/www/html/
+      - xml-transfer:/tmp/lap-xml-transfer
     depends_on:
       - magento-db
     networks:
@@ -69,6 +70,28 @@ services:
     networks:
       backend:
 
+  lap-php:
+    build: ./lap/php
+    container_name: lap-php
+    expose:
+      - 9000
+    volumes:
+      - lap-source:/var/www/lap
+      - xml-transfer:/tmp/lap-xml-transfer
+    networks:
+      backend:
+
+  lap-build:
+    restart: 'no'
+    image: php:7.2-cli
+    container_name: magento-build
+    volumes:
+      - magento-source:/var/www/html/
+      - ./magento/build/:/build
+    command: "/bin/bash /build/build.sh"
+    networks:
+      backend:
+
 networks:
   frontend:
   backend:
@@ -78,4 +101,6 @@ volumes:
   redis-data:
   elastic-data:
   magento-source:
+  lap-source:
+  xml-transfer:
   magento-db:
