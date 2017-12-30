@@ -1,19 +1,13 @@
 #!/usr/bin/env bash
 echo ""
-echo "Installing SSH and adding github host key"
+echo "Installing SSH ,git, mariadb and adding github host key"
 echo ""
 
-apt-get -yqq update && apt-get -yqq install apt-utils ssh
+apt-get -yqq update && apt-get -yqq install apt-utils ssh unzip git mariadb-client
 
 mkdir -p /root/.ssh
 touch ~/.ssh/known_hosts
 ssh-keyscan -H github.com >> ~/.ssh/known_hosts
-
-echo ""
-echo "Installing git and stuff"
-echo ""
-
-apt-get -yqq install git mariadb-client
 
 echo ""
 echo "Cleaning up /var/www/html"

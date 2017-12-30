@@ -84,13 +84,19 @@ services:
   lap-build:
     restart: 'no'
     image: php:7.2-cli
-    container_name: magento-build
+    container_name: lap-build
     volumes:
-      - magento-source:/var/www/html/
-      - ./magento/build/:/build
+      - lap-source:/var/www/html/
+      - ./lap/build/:/build
     command: "/bin/bash /build/build.sh"
     networks:
       backend:
+
+#  lap-redis:
+#    image: redis:3
+#    container_name: lap-redis
+#    volumes:
+#      - lap-redis:/data
 
 networks:
   frontend:
