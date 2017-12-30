@@ -1,0 +1,81 @@
+version: '3.1'
+services:
+#  redis:
+#  elasticsearch:
+#  mariadb:
+#  php-fpm:
+#  nginx:
+# lap-worker:
+
+  magento-nginx:
+    container_name: magento-nginx
+    image: nginx:1.13
+    depends_on:
+      - magento-php
+    links:
+      - magento-php
+    volumes:
+       - ./magento/nginx/nginx-config:/etc/nginx/conf.d/default.conf
+       - magento-source:/var/www/html/
+    ports:
+     - "8080:80"
+    environment:
+     - NGINX_HOST=demo.lap-demo.de
+     - NGINX_PORT=80
+    command: /bin/bash -c "nginx -g 'daemon off;'"
+    networks:
+      backend:
+      frontend:
+
+  magento-php:
+    build: ./magento/php
+    container_name: magento-php
+    expose:
+      - 9000
+    volumes:
+      - magento-source:/var/www/html/
+    depends_on:
+      - magento-db
+    networks:
+      backend:
+
+  magento-build:
+    restart: 'no'
+    image: php:7.2-cli
+    container_name: magento-build
+    depends_on:
+      - magento-db
+    links:
+      - magento-db
+    volumes:
+      - magento-source:/var/www/html/
+      - ./magento/build/:/build
+    command: "/bin/bash /build/build.sh"
+    networks:
+      backend:
+
+  magento-db:
+    container_name: magento-db
+    image: mariadb:10.3
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: lizardsAndPumpkins
+      MYSQL_DATABASE: magento
+      MYSQL_USER: magento
+      MYSQL_PASSWORD: lizardsAndPumpkins
+    volumes:
+      - magento-db:/var/lib/mysql
+      - ./magento/build/:/build
+    networks:
+      backend:
+
+networks:
+  frontend:
+  backend:
+
+volumes:
+  db-data:
+  redis-data:
+  elastic-data:
+  magento-source:
+  magento-db:
